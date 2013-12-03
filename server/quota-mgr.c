@@ -336,11 +336,10 @@ seaf_quota_manager_get_user_usage (SeafQuotaManager *mgr, const char *user)
     gint64 total = 0;
 
     snprintf (sql, sizeof(sql), 
-              "SELECT size FROM "
-              "RepoOwner o LEFT JOIN VirtualRepo v ON o.repo_id=v.repo_id, "
-              "RepoSize WHERE "
-              "owner_id='%s' AND o.repo_id=RepoSize.repo_id "
-              "AND v.repo_id IS NULL",
+              "SELECT size FROM RepoOwner as o "
+              "LEFT JOIN VirtualRepo as v ON o.repo_id=v.repo_id "
+              "LEFT JOIN RepoSize as r ON o.repo_id=r.repo_id "
+              "WHERE owner_id='%s' AND v.repo_id IS NULL",
               user);
     if (seaf_db_foreach_selected_row (mgr->session->db, sql,
                                       get_total_size, &total) < 0)
